@@ -22,6 +22,13 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddMatBlazor();
+//  placeholder for db context
+builder.Services.AddDbContext<ApplicationDbContext>(a =>
+    {
+        // will add out connection string to chinook
+        a.UseSqlServer();
+    }
+);
 
 var app = builder.Build();
 
