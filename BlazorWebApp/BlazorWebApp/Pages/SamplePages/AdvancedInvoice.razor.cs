@@ -1,11 +1,20 @@
 ﻿#nullable disable
 using ChinookSystem.ViewModel;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 
 namespace BlazorWebApp.Pages.SamplePages
 {
     public partial class AdvancedInvoice
     {
+        enum PaymentTypes
+        {
+            Unknown,
+            Cash,
+            Chq,
+            CreditCard
+        }
+
         #region Fields
         private InvoiceView invoice;
         private string feedBack;
@@ -20,12 +29,29 @@ namespace BlazorWebApp.Pages.SamplePages
         private ValidationMessageStore? messageStore;
         #endregion
 
+        #region Properties
+        [Inject]
+        protected NavigationManager? NavigationManager { get; set; }
+
+        [Parameter]
+        public EventCallback<string> OnSelectionChanged { get; set; }
+
+        #endregion
+
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
             invoice = new InvoiceView();
             Random rnd = new Random();
             invoice.InvoiceNo = rnd.Next(1000, 2000);
+
+            //  edit context needs to be setup after data has been initialized
+            //  setup of the edit context to make use of the payment type property
+            editContext = new EditContext(invoice);
+            //  set the validation to use the HandleValidationRequest event
+            editContext.OnValidationRequested += HandleValidationRequested;
+            //  setup the message store to track any validation messages
+            messageStore = new ValidationMessageStore(editContext);
         }
 
         //  Handles the validation requested.  This allows for custom validation
@@ -33,7 +59,25 @@ namespace BlazorWebApp.Pages.SamplePages
         private void HandleValidationRequested(object? sender,
             ValidationRequestedEventArgs args)
         {
+            //  clear the message store if there is any existing validation errors.
+            messageStore?.Clear();
 
+            //  custom validation logic
+            //  payment type cannot be set to "Unknown"
+            if (invoice.PaymentType != null && invoice.PaymentType ==
+                PaymentTypes.Unknown.ToString())
+            {
+                messageStore?.Add(() => invoice.PaymentType, "Payment Type cannot be set to Unknown");
+            }
+        }
+
+        //  called when [payment type is click]
+        private async void OnPaymentTypeClick()
+        {
+            //  waiting for payment type to finish changing
+            await OnSelectionChanged.InvokeAsync(invoice.PaymentType);
+            //  manually call the validation for the edit context
+            editContext?.Validate();
         }
 
         private void HandleSubmit()

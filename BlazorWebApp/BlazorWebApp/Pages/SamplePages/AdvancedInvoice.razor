@@ -2,7 +2,7 @@
 <PageTitle>Advanced Invoice</PageTitle>
 <h3>Advanced Invoice #@invoice.InvoiceNo</h3>
 
-<EditForm Model="invoice" OnValidSubmit="@HandleValidSubmit"
+<EditForm EditContext="editContext" OnValidSubmit="@HandleValidSubmit"
           OnInvalidSubmit="@HandleInValidSubmit">
     @{
         //  The DataAnnotationsValidator is the standard validator type in Blazor.
@@ -39,12 +39,21 @@
         </p>
         <p>
             <label>Payment Type</label>
-            <InputText id="paymentType" @bind-Value="invoice.PaymentType" />
+            <InputSelect @bind-Value="invoice.PaymentType" @onclick="() => OnPaymentTypeClick()">
+                @* iterate the enum PaymentTypes and get each value within it*@
+                @foreach (var paymentType in Enum.GetValues(typeof(PaymentTypes)))
+                {
+                    <option value="@paymentType">@paymentType</option>
+                }
+            </InputSelect>
             <ValidationMessage For="() => invoice.PaymentType" />
         </p>
     </div>
-    <button type="submit">Submit</button>
+    <MatButton type="submit" Label="CLick me" Raised="true"
+               Disabled="@(!context.IsModified() || !context.Validate())"/>
 </EditForm>
+<MatButton Label="Index Page" Raised="true" 
+           @onclick="@(()=>NavigationManager.NavigateTo($"/"))"/>
 <div>
     <h4>@feedBack</h4>
 </div>
