@@ -1,0 +1,52 @@
+﻿@page "/SamplePages/AdvancedInvoice"
+<PageTitle>Advanced Invoice</PageTitle>
+<h3>Advanced Invoice #@invoice.InvoiceNo</h3>
+
+<EditForm Model="invoice" OnValidSubmit="@HandleValidSubmit"
+          OnInvalidSubmit="@HandleInValidSubmit">
+    @{
+        //  The DataAnnotationsValidator is the standard validator type in Blazor.
+        //  Adding this component within an EditForm component will enable form
+        //      validation
+    }
+    <DataAnnotationsValidator />
+    @{
+        //  The ValidationSummary component can simply be dropped into an EditForm in our
+        //      mark-up
+    }
+    @*<ValidationSummary/>*@
+    <div>
+        <p>
+            <label>Invoice Date</label>
+            <label>@invoice.InvoiceDate.ToShortDateString()</label>
+        </p>
+    </div>
+    <div>
+        <p>
+            <label>Sub Total</label>
+            <label>@invoice.SubTotal</label>
+        </p>
+        <p>
+            <label>Tax</label>
+            <label>@invoice.Tax</label>
+        </p>
+    </div>
+    <div>
+        <p>
+            <label>Sale Person</label>
+            <InputText id="salePerson" @bind-Value="invoice.SalePerson" />
+            <ValidationMessage For="() => invoice.SalePerson" />
+        </p>
+        <p>
+            <label>Payment Type</label>
+            <InputText id="paymentType" @bind-Value="invoice.PaymentType" />
+            <ValidationMessage For="() => invoice.PaymentType" />
+        </p>
+    </div>
+    <button type="submit">Submit</button>
+</EditForm>
+<div>
+    <h4>@feedBack</h4>
+</div>
+
+

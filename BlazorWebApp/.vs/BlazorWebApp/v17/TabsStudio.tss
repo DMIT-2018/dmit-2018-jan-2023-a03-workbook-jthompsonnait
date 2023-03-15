@@ -2,19 +2,18 @@
 <ArrayOfArrayOfArrayOfString xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <ArrayOfArrayOfString>
     <ArrayOfString>
-      <string>C:\OD\OneDrive - NAIT\Jan 2023\dmit-2018-jan-2023-a03-workbook-jthompsonnait\BlazorWebApp\ChinookSystem\BLL\Dummy.txt</string>
-    </ArrayOfString>
-    <ArrayOfString>
-      <string>C:\OD\OneDrive - NAIT\Jan 2023\dmit-2018-jan-2023-a03-workbook-jthompsonnait\BlazorWebApp\BlazorWebApp\Program.cs</string>
-    </ArrayOfString>
-    <ArrayOfString>
       <string>C:\OD\OneDrive - NAIT\Jan 2023\dmit-2018-jan-2023-a03-workbook-jthompsonnait\BlazorWebApp\BlazorWebApp\Pages\SamplePages\Basics.razor</string>
-    </ArrayOfString>
-    <ArrayOfString>
       <string>C:\OD\OneDrive - NAIT\Jan 2023\dmit-2018-jan-2023-a03-workbook-jthompsonnait\BlazorWebApp\BlazorWebApp\Pages\SamplePages\Basics.razor.cs</string>
     </ArrayOfString>
     <ArrayOfString>
-      <string>C:\OD\OneDrive - NAIT\Jan 2023\dmit-2018-jan-2023-a03-workbook-jthompsonnait\BlazorWebApp\BlazorWebApp\Pages\_Host.cshtml</string>
+      <string>C:\OD\OneDrive - NAIT\Jan 2023\dmit-2018-jan-2023-a03-workbook-jthompsonnait\BlazorWebApp\BlazorWebApp\Pages\SamplePages\Invoice.razor</string>
+      <string>C:\OD\OneDrive - NAIT\Jan 2023\dmit-2018-jan-2023-a03-workbook-jthompsonnait\BlazorWebApp\BlazorWebApp\Pages\SamplePages\Invoice.razor.cs</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>C:\OD\OneDrive - NAIT\Jan 2023\dmit-2018-jan-2023-a03-workbook-jthompsonnait\BlazorWebApp\BlazorWebApp\Shared\NavMenu.razor</string>
+    </ArrayOfString>
+    <ArrayOfString>
+      <string>C:\OD\OneDrive - NAIT\Jan 2023\dmit-2018-jan-2023-a03-workbook-jthompsonnait\BlazorWebApp\ChinookSystem\ViewModel\InvoiceView.cs</string>
     </ArrayOfString>
   </ArrayOfArrayOfString>
 </ArrayOfArrayOfArrayOfString>
