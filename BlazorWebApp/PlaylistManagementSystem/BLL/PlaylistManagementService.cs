@@ -1,14 +1,40 @@
-﻿using PlaylistManagementSystem.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿#nullable disable
+using PlaylistManagementSystem.ViewModels;
+using PlaylistManagementSystem.DAL;
 
 namespace PlaylistManagementSystem.BLL
 {
     public class PlaylistManagementService
     {
+        #region Fields
+
+        private readonly PlaylistManagementContext _playlistManagementContext;
+
+        #endregion
+
+        internal PlaylistManagementService(PlaylistManagementContext playlistManagementContext)
+        {
+            _playlistManagementContext = playlistManagementContext;
+        }
+
+        //  get working version data
+        public WorkingVersionView GetWorkingVersion()
+        {
+            return _playlistManagementContext.WorkingVersions
+                .Select(x => new WorkingVersionView
+                    {
+                        VersionId = x.VersionId,
+                        Major = x.Major,
+                        Minor = x.Minor,
+                        Build = x.Build,
+                        Revision = x.Revision,
+                        AsOfDate = x.AsOfDate,
+                        Comments = x.Comments
+
+                    }
+                ).FirstOrDefault();
+        }
+
         //  fetch playlist
         public List<PlaylistTrackView> FetchPlaylist(string userName, string playlistName)
         {

@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "dgSpecHash": "IssT/bsRgOY7yS3K/KJ7Xkf1dBqR4waLlDYCY/t95jFWuoRpLeA44jyMf3+/LVZIpzDZ9eaTnT6arYFTgYbClg==",
-  "success": true,
+  "dgSpecHash": "ZyQ4x61H6RSeqZiLMRbsNbXpjplo8AdI0/gPcL1SmNwVY/Mwrxuq1SDzl6576x8xqXhJsS3OuEpYNvHY9Z2Mfw==",
+  "success": false,
   "projectFilePath": "C:\\OD\\OneDrive - NAIT\\Jan 2023\\dmit-2018-jan-2023-a03-workbook-jthompsonnait\\BlazorWebApp\\BlazorWebApp\\BlazorWebApp.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\jthompson\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
@@ -65,5 +65,15 @@
     "C:\\Users\\jthompson\\.nuget\\packages\\system.text.encoding.codepages\\4.7.0\\system.text.encoding.codepages.4.7.0.nupkg.sha512",
     "C:\\Users\\jthompson\\.nuget\\packages\\system.windows.extensions\\4.7.0\\system.windows.extensions.4.7.0.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1605",
+      "level": "Error",
+      "message": "Warning As Error: Detected package downgrade: Microsoft.EntityFrameworkCore.SqlServer from 6.0.14 to 6.0.13. Reference the package directly from the project to select a different version. \r\n BlazorWebApp -> PlaylistManagementSystem -> Microsoft.EntityFrameworkCore.SqlServer (>= 6.0.14) \r\n BlazorWebApp -> Microsoft.EntityFrameworkCore.SqlServer (>= 6.0.13)",
+      "libraryId": "Microsoft.EntityFrameworkCore.SqlServer",
+      "targetGraphs": [
+        "net6.0"
+      ]
+    }
+  ]
 }
