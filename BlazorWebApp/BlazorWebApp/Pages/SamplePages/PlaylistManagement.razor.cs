@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.AspNetCore.Components;
 using PlaylistManagementSystem.BLL;
+using PlaylistManagementSystem.Paginator;
 using PlaylistManagementSystem.ViewModels;
 
 
@@ -41,7 +42,7 @@ namespace BlazorWebApp.Pages.SamplePages
         protected int CurrentPage { get; set; } = 1;
 
         //paginator collection of tracks selection view
-        protected PageResult<TrackSelectionView> PaginatorTrackSelection { get; set; } = new();
+        protected PagedResult<TrackSelectionView> PaginatorTrackSelection { get; set; } = new();
 
         #endregion
 

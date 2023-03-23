@@ -1,4 +1,5 @@
-﻿#nullable disable
+﻿
+#nullable disable
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using PlaylistManagementSystem.BLL;
