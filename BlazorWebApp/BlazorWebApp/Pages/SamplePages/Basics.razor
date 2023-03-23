@@ -42,3 +42,21 @@
 </p>
 <button class="btn-success" @onclick="RandomValue">Random Value</button>
 
+<p>
+    <MatButton OnClick="GetDatabase" Label="Get Database Version" Raised="true"></MatButton>
+    @if (workingVersionView.Build == 0)
+    {
+        <p style="font-weight: bold">Build Version: Unknown</p>
+    }
+    else
+    {
+        <p>Build Version: @workingVersionView.Major .
+            @workingVersionView.Minor .
+            @workingVersionView.Build .
+            Released: @workingVersionView.AsOfDate.ToShortDateString()
+
+
+        </p>
+    }
+</p>
+
