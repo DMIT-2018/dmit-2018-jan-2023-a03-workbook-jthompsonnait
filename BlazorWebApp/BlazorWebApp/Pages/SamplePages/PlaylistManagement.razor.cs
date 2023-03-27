@@ -46,11 +46,44 @@ namespace BlazorWebApp.Pages.SamplePages
 
         #endregion
 
+        private async void Sort(string column)
+        {
+            Direction = SortField == column ? Direction == "asc" ? "desc" 
+                : "asc" : "asc";
+            SortField = column;
+            if (!string.IsNullOrWhiteSpace(searchPattern))
+            {
+                await FetchArtistOrAlbumTracks();
+            }
+        }
+
+        //  sets css class to display up and down arrows
+        private string GetSortColumn(string x)
+        {
+            return x == SortField ? Direction == "desc" ? "desc" : "asc" : "";
+        }
 
         private async Task FetchArtistOrAlbumTracks()
         {
             //  we would normal check if the user has enter in a value into the search
             //      pattern but we will let the service do the error checking
+            PaginatorTrackSelection = await PlaylistManagementService.FetchArtistOrAlbumTracks(
+                searchType, searchPattern, CurrentPage, PAGE_SIZE, SortField, Direction);
+            //  At this moment, Blazor does not recognize the state has change and will not
+            //      refresh the UI
+            await InvokeAsync(StateHasChanged);
+        }
+
+        private void FetchPlaylist()
+        {
+            //Playlists = await PlaylistManagementService.FetchPlaylist(userName, playlistName)'
+            //await InvokeAsync(StateHasChanged);
+        }
+       // private async Task AddTrackToPlaylist(int trackId)
+        private void AddTrackToPlaylist(int trackId)
+        {
+            //PlaylistManagementService.AddTrack(userName, playlistName, trackId);
+            //await FetchPlaylist();
         }
     }
 }

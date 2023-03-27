@@ -1,6 +1,8 @@
 ﻿#nullable disable
+using System.Security.Cryptography.X509Certificates;
 using PlaylistManagementSystem.ViewModels;
 using PlaylistManagementSystem.DAL;
+using PlaylistManagementSystem.Paginator;
 
 namespace PlaylistManagementSystem.BLL
 {
@@ -22,16 +24,16 @@ namespace PlaylistManagementSystem.BLL
         {
             return _playlistManagementContext.WorkingVersions
                 .Select(x => new WorkingVersionView
-                    {
-                        VersionId = x.VersionId,
-                        Major = x.Major,
-                        Minor = x.Minor,
-                        Build = x.Build,
-                        Revision = x.Revision,
-                        AsOfDate = x.AsOfDate,
-                        Comments = x.Comments
+                {
+                    VersionId = x.VersionId,
+                    Major = x.Major,
+                    Minor = x.Minor,
+                    Build = x.Build,
+                    Revision = x.Revision,
+                    AsOfDate = x.AsOfDate,
+                    Comments = x.Comments
 
-                    }
+                }
                 ).FirstOrDefault();
         }
 
@@ -42,10 +44,33 @@ namespace PlaylistManagementSystem.BLL
         }
 
         //  fetch artist or album tracks
-        public List<TrackSelectionView> FetchArtistOrAlbumTracks(string searchType,
-            string searchValue)
+        public Task<PagedResult<TrackSelectionView>> FetchArtistOrAlbumTracks(string searchType,
+            string searchValue, int page, int pageSize, string sortColumn, string direction)
         {
-            return null;
+            //  Business Rules:
+            //  These are processing rules that need to be satisfied for valid data.
+            //      rule:   search value cannot be empty
+            if (string.IsNullOrWhiteSpace(searchValue))
+            {
+                throw new ArgumentNullException("Search name is missing");
+            }
+            //  Task.FromResult() creates a finished Task that holds a value in its Result
+            //      property
+            return Task.FromResult(_playlistManagementContext.Tracks
+                .Where(x => searchType == "Artist"
+                    ? x.Album.Artist.Name.Contains(searchValue)
+                    : x.Album.Title.Contains(searchValue))
+                .Select(x => new TrackSelectionView
+                {
+                    TrackId = x.TrackId,
+                    SongName = x.Name,
+                    AlbumTitle = x.Album.Title,
+                    ArtistName = x.Album.Artist.Name,
+                    Milliseconds = x.Milliseconds,
+                    Price = x.UnitPrice
+                }).AsQueryable()
+                .OrderBy(sortColumn, direction)
+                .ToPagedResult(page, pageSize));
         }
 
         //  add track
