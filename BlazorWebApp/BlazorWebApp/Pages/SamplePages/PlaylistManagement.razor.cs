@@ -1,4 +1,4 @@
-﻿
+﻿#nullable disable
 using Microsoft.AspNetCore.Components;
 using PlaylistManagementSystem.BLL;
 using PlaylistManagementSystem.Paginator;
@@ -22,7 +22,7 @@ namespace BlazorWebApp.Pages.SamplePages
         private string searchType { get; set; } = "Artist";
         private string playlistName { get; set; } = "HansenB1";
         private string userName { get; set; } = "HansenB";
-        private int playlistId { get; set; }
+        private int playlistId { get; set; } = 13;
         private string feedback { get; set; }
         #endregion
 
@@ -34,7 +34,7 @@ namespace BlazorWebApp.Pages.SamplePages
 
         // sort column used with the paginator
         protected string SortField { get; set; } = "Owner";
-        
+
         // sort direction for the paginator
         protected string Direction { get; set; } = "desc";
 
@@ -48,7 +48,7 @@ namespace BlazorWebApp.Pages.SamplePages
 
         private async void Sort(string column)
         {
-            Direction = SortField == column ? Direction == "asc" ? "desc" 
+            Direction = SortField == column ? Direction == "asc" ? "desc"
                 : "asc" : "asc";
             SortField = column;
             if (!string.IsNullOrWhiteSpace(searchPattern))
@@ -65,25 +65,169 @@ namespace BlazorWebApp.Pages.SamplePages
 
         private async Task FetchArtistOrAlbumTracks()
         {
-            //  we would normal check if the user has enter in a value into the search
-            //      pattern but we will let the service do the error checking
-            PaginatorTrackSelection = await PlaylistManagementService.FetchArtistOrAlbumTracks(
-                searchType, searchPattern, CurrentPage, PAGE_SIZE, SortField, Direction);
-            //  At this moment, Blazor does not recognize the state has change and will not
-            //      refresh the UI
-            await InvokeAsync(StateHasChanged);
+            try
+            {
+                //  we would normal check if the user has enter in a value into the search
+                //      pattern but we will let the service do the error checking
+                PaginatorTrackSelection = await PlaylistManagementService.FetchArtistOrAlbumTracks(
+                    searchType, searchPattern, CurrentPage, PAGE_SIZE, SortField, Direction);
+                //  At this moment, Blazor does not recognize the state has change and will not
+                //      refresh the UI
+                await InvokeAsync(StateHasChanged);
+            }
+
+            #region catch all exceptions
+            catch (AggregateException ex)
+            {
+                foreach (var error in ex.InnerExceptions)
+                {
+                    feedback = error.Message;
+                }
+            }
+
+            catch (ArgumentNullException ex)
+            {
+                feedback = GetInnerException(ex).Message;
+            }
+
+            catch (Exception ex)
+            {
+                feedback = GetInnerException(ex).Message;
+            }
+            #endregion
         }
 
-        private void FetchPlaylist()
+        private async Task FetchPlaylist()
         {
-            //Playlists = await PlaylistManagementService.FetchPlaylist(userName, playlistName)'
-            //await InvokeAsync(StateHasChanged);
+
+            try
+            {
+                Playlists = await PlaylistManagementService.FetchPlaylist(userName, playlistName);
+                await InvokeAsync(StateHasChanged);
+            }
+
+            #region catch all exceptions
+            catch (AggregateException ex)
+            {
+                foreach (var error in ex.InnerExceptions)
+                {
+                    feedback = error.Message;
+                }
+            }
+
+            catch (ArgumentNullException ex)
+            {
+                feedback = GetInnerException(ex).Message;
+            }
+
+            catch (Exception ex)
+            {
+                feedback = GetInnerException(ex).Message;
+            }
+            #endregion
         }
-       // private async Task AddTrackToPlaylist(int trackId)
-        private void AddTrackToPlaylist(int trackId)
+
+        private async Task AddTrackToPlaylist(int trackId)
         {
-            //PlaylistManagementService.AddTrack(userName, playlistName, trackId);
-            //await FetchPlaylist();
+            try
+            {
+                PlaylistManagementService.AddTrack(userName, playlistName, trackId);
+                await FetchPlaylist();
+            }
+
+            #region catch all exceptions
+            catch (AggregateException ex)
+            {
+                foreach (var error in ex.InnerExceptions)
+                {
+                    feedback = error.Message;
+                }
+            }
+
+            catch (ArgumentNullException ex)
+            {
+                feedback = GetInnerException(ex).Message;
+            }
+
+            catch (Exception ex)
+            {
+                feedback = GetInnerException(ex).Message;
+            }
+            #endregion
         }
+
+        private async Task RemoveTracks()
+        {
+            try
+            {
+                List<int> removeTracks = new();
+                foreach (var playlist in Playlists)
+                {
+                    if (playlist.Remove)
+                    {
+                        removeTracks.Add(playlist.TrackId);
+                    }
+                }
+                PlaylistManagementService.RemoveTracks(playlistId, removeTracks);
+                await FetchPlaylist();
+
+            }
+
+            #region catch all exceptions
+            catch (AggregateException ex)
+            {
+                foreach (var error in ex.InnerExceptions)
+                {
+                    feedback = error.Message;
+                }
+            }
+
+            catch (ArgumentNullException ex)
+            {
+                feedback = GetInnerException(ex).Message;
+            }
+
+            catch (Exception ex)
+            {
+                feedback = GetInnerException(ex).Message;
+            }
+            #endregion
+        }
+
+        private void ReorderTracks()
+        {
+            try
+            {
+
+            }
+
+            #region catch all exceptions
+            catch (AggregateException ex)
+            {
+                foreach (var error in ex.InnerExceptions)
+                {
+                    feedback = error.Message;
+                }
+            }
+
+            catch (ArgumentNullException ex)
+            {
+                feedback = GetInnerException(ex).Message;
+            }
+
+            catch (Exception ex)
+            {
+                feedback = GetInnerException(ex).Message;
+            }
+            #endregion
+        }
+        #region Methods
+        private Exception GetInnerException(Exception ex)
+        {
+            while (ex.InnerException != null)
+                ex = ex.InnerException;
+            return ex;
+        }
+        #endregion
     }
 }
