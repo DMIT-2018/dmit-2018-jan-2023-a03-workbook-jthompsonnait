@@ -26,17 +26,35 @@ namespace PlaylistManagementSystem.BLL
         {
             return _playlistManagementContext.WorkingVersions
                 .Select(x => new WorkingVersionView
-                {
-                    VersionId = x.VersionId,
-                    Major = x.Major,
-                    Minor = x.Minor,
-                    Build = x.Build,
-                    Revision = x.Revision,
-                    AsOfDate = x.AsOfDate,
-                    Comments = x.Comments
+                    {
+                        VersionId = x.VersionId,
+                        Major = x.Major,
+                        Minor = x.Minor,
+                        Build = x.Build,
+                        Revision = x.Revision,
+                        AsOfDate = x.AsOfDate,
+                        Comments = x.Comments
 
-                }
+                    }
                 ).FirstOrDefault();
+        }
+
+        public List<ExtendedTrackSelectionView> FetchInventory()
+        {
+            return _playlistManagementContext.Tracks
+                .Take(20)
+                .OrderBy(x => x.Name)
+                .Select(x => new ExtendedTrackSelectionView
+                {
+                    TrackId = x.TrackId,
+                    AlbumTitle = x.Album.Title,
+                    ArtistName = x.Album.Artist.Name,
+                    SongName = x.Name,
+                    Price = x.UnitPrice,
+                    Milliseconds = x.Milliseconds,
+                    Quantity = 1,
+                    Total = x.UnitPrice
+                }).ToList();
         }
 
         //  fetch playlist
@@ -339,13 +357,130 @@ namespace PlaylistManagementSystem.BLL
         //  move tracks
         public void MoveTracks(int playlistId, List<MoveTrackView> moveTracks)
         {
+            {
+                // local variables
+                //	hold the playlist that we are working with
+                List<PlaylistTrack> scratchPadPlaylistTracks = null;
+                int tracknumber = 0;
+
+                //	we need a containter to hold x number of Exception messages
+                List<Exception> errorlist = new List<System.Exception>();
+
+                if (playlistId == 0)
+                {
+                    throw new ArgumentNullException("No playlist ID was provided");
+                }
+
+                if (moveTracks.Count() == 0)
+                {
+                    throw new ArgumentNullException("No tracks were provided to be move");
+                }
+
+                //	check that we have items to move
+                var count = moveTracks
+                    .Where(x => x.TrackNumber > 0)
+                    .Count();
+
+                if (count == 0)
+                {
+                    throw new ArgumentNullException(
+                        "No list of tracks were submitted with track number greater than zero");
+                }
+
+                //  checking for track numbers being less than zero
+                count = moveTracks
+                    .Where(x => x.TrackNumber < 0)
+                    .Count();
+                if (count > 0)
+                {
+                    throw new ArgumentNullException("There are track number with a values less than zero");
+                }
+
+                //	check to see if a track number has been submitted more than once
+                List<MoveTrackView> repeatTracks = moveTracks
+                    .Where(x => x.TrackNumber > 0)
+                    .GroupBy(x => x.TrackNumber)
+                    .Where(gb => gb.Count() > 1)
+                    .Select(gb => new MoveTrackView
+                    {
+                        TrackId = 0,
+                        TrackNumber = gb.Key
+                    }).ToList();
+                foreach (var rt in repeatTracks)
+                {
+                    errorlist.Add(new Exception($"Track number {rt.TrackNumber} is used more than once"));
+                }
+
+                scratchPadPlaylistTracks = _playlistManagementContext.PlaylistTracks
+                    .Where(x => x.PlaylistId == playlistId)
+                    .OrderBy(x => x.TrackNumber)
+                    .Select(x => x).ToList();
+
+
+                //	reset all of our track numbers to zero
+                foreach (var playlistTrack in scratchPadPlaylistTracks)
+                {
+                    playlistTrack.TrackNumber = 0;
+                }
+
+                //	update the playlist track number with move track numbers
+                foreach (var moveTrack in moveTracks)
+                {
+                    PlaylistTrack playlistTrack = scratchPadPlaylistTracks
+                        .Where(x => x.TrackId == moveTrack.TrackId)
+                        .Select(x => x).FirstOrDefault();
+                    //	check to see if the playlist track exist in the PlaylistTracks
+                    if (playlistTrack == null)
+                    {
+                        var songName = _playlistManagementContext.Tracks
+                            .Where(x => x.TrackId == moveTrack.TrackId)
+                            .Select(x => x.Name)
+                            .FirstOrDefault();
+                        errorlist.Add(new Exception($"The track ({songName}) cannot be found in the playlist"));
+                    }
+                    else
+                    {
+                        playlistTrack.TrackNumber = moveTrack.TrackNumber;
+                    }
+                }
+
+                if (errorlist.Count() == 0)
+                {
+                    foreach (var playlistTrack in scratchPadPlaylistTracks)
+                    {
+                        bool wasFound = true;
+                        //  only want to process those track number that are empty (zero)
+                        if (playlistTrack.TrackNumber == 0)
+                        {
+                            while (wasFound)
+                            {
+                                //	we want to increment the track number and process until
+                                //		the calue is not found in the scratch pad playlist
+                                tracknumber++;
+                                wasFound = scratchPadPlaylistTracks
+                                    .Where(x => x.TrackNumber == tracknumber)
+                                    .Select(x => x)
+                                    .Any();
+                            }
+
+                            playlistTrack.TrackNumber = tracknumber;
+                        }
+                    }
+                }
+
+                if (errorlist.Count() > 0)
+                {
+                    //  we need to clear the "track changes" otherwise we leave our entity system in flux
+                    _playlistManagementContext.ChangeTracker.Clear();
+                    throw new AggregateException("Unable to remove request tracks.  Check concerns", errorlist);
+                }
+                else
+                {
+                    //	all work has been staged
+                    _playlistManagementContext.SaveChanges();
+                }
+            }
 
         }
-
-
-
-
-
-
     }
 }

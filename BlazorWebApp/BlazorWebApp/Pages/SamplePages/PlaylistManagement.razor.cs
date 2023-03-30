@@ -170,7 +170,6 @@ namespace BlazorWebApp.Pages.SamplePages
                 }
                 PlaylistManagementService.RemoveTracks(playlistId, removeTracks);
                 await FetchPlaylist();
-
             }
 
             #region catch all exceptions
@@ -194,10 +193,24 @@ namespace BlazorWebApp.Pages.SamplePages
             #endregion
         }
 
-        private void ReorderTracks()
+        private async Task ReorderTracks()
         {
             try
             {
+                List<MoveTrackView> moveTracks = new();
+                foreach (var playlist in Playlists)
+                {
+                    if (playlist.NewTrackNumber > 0)
+                    {
+                        moveTracks.Add(new MoveTrackView()
+                        {
+                            TrackId = playlist.TrackId,
+                            TrackNumber = playlist.NewTrackNumber
+                        });
+                    }
+                }
+                PlaylistManagementService.MoveTracks(playlistId, moveTracks);
+                await FetchPlaylist();
 
             }
 
